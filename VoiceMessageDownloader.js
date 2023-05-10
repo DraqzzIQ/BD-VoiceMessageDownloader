@@ -2,8 +2,9 @@
  * @name VoiceMessageDownloader
  * @author DraqzzIQ
  * @description Adds the ability to download voice messages
- * @version 0.0.2
+ * @version 0.0.3
  * @source https://github.com/DraqzzIQ/BD-VoiceMessageDownloader
+ * @updateUrl https://raw.githubusercontent.com/DraqzzIQ/BD-VoiceMessageDownloader/main/VoiceMessageDownloader.js
  */
 
 module.exports = (_ => {
