@@ -2,7 +2,8 @@
  * @name VoiceMessageDownloader
  * @author DraqzzIQ
  * @description Adds the ability to download voice messages
- * @version 0.0.1
+ * @version 0.0.2
+ * @source https://github.com/DraqzzIQ/BD-VoiceMessageDownloader
  */
 
 module.exports = (_ => {
@@ -60,43 +61,29 @@ module.exports = (_ => {
 				if (!e.instance.props.message) return;
 				if (!e.instance.props.message.attachments[0]) return;
 				if (e.instance.props.message.attachments[0].content_type != "audio/ogg") return;
-				let entries = [
-					BDFDB.ContextMenuUtils.createItem(BDFDB.LibraryComponents.MenuItems.MenuItem, {
-						label: "Download",
-						id: BDFDB.ContextMenuUtils.createItemId(this.name, "download-voice-message"),
-						type: "Message",
-						icon: _ => BDFDB.ReactUtils.createElement(BDFDB.LibraryComponents.MenuItems.MenuIcon, {
-							icon: BDFDB.LibraryComponents.SvgIcon.Names.DOWNLOAD
-						}),
-						action: _ => {
-							let url = e.instance.props.message.attachments[0].url.replace("cdn.discordapp.com", "media.discordapp.net");
-							console.log(url)
+				let [children, index] = BDFDB.ContextMenuUtils.findItem(e.returnvalue, { id: "copy-link" });
+				children.splice(index > -1 ? index : children.length, 0, BDFDB.ContextMenuUtils.createItem(BDFDB.LibraryComponents.MenuItems.MenuItem, {
+					label: "Download",
+					id: BDFDB.ContextMenuUtils.createItemId(this.name, "download-voice-message"),
+					type: "Message",
+					icon: _ => BDFDB.ReactUtils.createElement(BDFDB.LibraryComponents.MenuItems.MenuIcon, {
+						icon: BDFDB.LibraryComponents.SvgIcon.Names.DOWNLOAD
+					}),
+					action: _ => {
+						let url = e.instance.props.message.attachments[0].url.replace("cdn.discordapp.com", "media.discordapp.net");
+						console.log(url)
 
-							BDFDB.DiscordUtils.requestFileData(url, (error, buffer) => {
-								let hrefURL = window.URL.createObjectURL(new Blob([buffer], { type: "ogg" }));
-								console.log(hrefURL);
-								let tempLink = document.createElement("a");
-								tempLink.href = hrefURL;
-								tempLink.download = "voice-message.ogg";
-								tempLink.click();
-								window.URL.revokeObjectURL(hrefURL);
-							});
-						}
-					})
-				].filter(n => n);
-				if (entries.length) {
-					let [children, index] = BDFDB.ContextMenuUtils.findItem(e.returnvalue, { id: "copy-link" });
-					children.splice(index > -1 ? index + 1 : children.length, 0, entries.length > 1 ? BDFDB.ContextMenuUtils.createItem(BDFDB.LibraryComponents.MenuItems.MenuItem, {
-						label: "Download",
-						id: BDFDB.ContextMenuUtils.createItemId(this.name, "download-voice-message-submenu"),
-						children: entries.map(n => {
-							n.props.label = n.props.type;
-							delete n.props.type;
-							delete n.props.icon;
-							return n;
-						})
-					}) : entries);
-				}
+						BDFDB.DiscordUtils.requestFileData(url, (error, buffer) => {
+							let hrefURL = window.URL.createObjectURL(new Blob([buffer], { type: "ogg" }));
+							console.log(hrefURL);
+							let tempLink = document.createElement("a");
+							tempLink.href = hrefURL;
+							tempLink.download = "voice-message.ogg";
+							tempLink.click();
+							window.URL.revokeObjectURL(hrefURL);
+						});
+					}
+				}));
 			}
 		};
 	})(window.BDFDB_Global.PluginUtils.buildPlugin(changeLog));
